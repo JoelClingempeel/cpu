@@ -4,11 +4,16 @@ module cpu(
 );
 
 parameter MEMORY_SIZE = 16;  // In bytes
+// Apply mask to strip destination bits from load/store instructions.
+parameter [7:0] LOAD_STORE_MASK = 8'b00111111;
 
 // Storage
 reg [7:0] registers [2:0];
 reg [15:0] mem [0:MEMORY_SIZE-1];
 reg [$clog2(MEMORY_SIZE)-1:0] pc = 0;
+reg [7:0] load_store_buffer;
+reg load_flag;
+reg store_flag;
 
 // Getting opcode and operand (1 byte each)
 // (For two operand instructions like "ADD A, 3", the first operand
@@ -44,6 +49,10 @@ assign A_reg = registers[0];
 assign B_reg = registers[1];
 assign C_reg = registers[2];
 
+// For individual byte access instead of via 2 byte words
+wire [7:0] word_addr = operand >> 1;
+wire high_or_low = operand % 1;
+
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         mem[0] <= 16'b0010000000101010;
@@ -58,12 +67,38 @@ always @(posedge clk or posedge rst) begin
         registers[1] <= 8'b101;
         registers[2] <= 8'b1;
         pc <= 8'b0;
+        load_store_buffer <= 8'b0;
+    // Use two cycle load/store to handle single port RAM.
+    // Load/Store Cycle 2: Load/store update when flag is set.
+    end else if (load_flag) begin
+        registers[destination] <= load_store_buffer;
+        load_flag <= 0;
+    end else if (store_flag) begin
+        if (high_or_low == 1'b1) begin
+            mem[word_addr][15:8] <= load_store_buffer;
+        end else begin
+            mem[word_addr][7:0] <= load_store_buffer;
+        end
+        store_flag <= 0;
+    // Load/Store Cycle 1: Copy data to buffer and set flag.
+    end else if (op_code & LOAD_STORE_MASK == 8'd1) begin  // LOAD
+        if (high_or_low == 1'b1) begin
+            load_store_buffer <= mem[word_addr][15:8];
+        end else begin
+            load_store_buffer <= mem[word_addr][7:0];
+        end
+        load_flag <= 1'b1;
+        pc <= pc + 1'b1;
+    end else if (op_code & LOAD_STORE_MASK == 8'd2) begin  // STORE
+        load_store_buffer <= registers[destination];
+        store_flag <= 1'b1;
+        pc <= pc + 1'b1;
+    // For ALU instructions, write ALU output to destination register.
     end else if (use_alu) begin
-        // For ALU instructions, write ALU output to destination register.
         registers[destination] <= alu_out;
         pc <= pc + 1'b1;
     end else begin
-        // TODO: Implement load/store, halt, jump, and conditional jump.
+        // TODO: Implement halt, jump, and conditional jump.
         pc <= pc + 1'b1;
     end
     
