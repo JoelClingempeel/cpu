@@ -14,6 +14,7 @@ reg [$clog2(MEMORY_SIZE)-1:0] pc = 0;
 reg [7:0] load_store_buffer;
 reg load_flag;
 reg store_flag;
+reg halted;
 
 // Getting opcode and operand (1 byte each)
 // (For two operand instructions like "ADD A, 3", the first operand
@@ -68,40 +69,45 @@ always @(posedge clk or posedge rst) begin
         registers[2] <= 8'b1;
         pc <= 8'b0;
         load_store_buffer <= 8'b0;
-    // Use two cycle load/store to handle single port RAM.
-    // Load/Store Cycle 2: Load/store update when flag is set.
-    end else if (load_flag) begin
-        registers[destination] <= load_store_buffer;
-        load_flag <= 0;
-    end else if (store_flag) begin
-        if (high_or_low == 1'b1) begin
-            mem[word_addr][15:8] <= load_store_buffer;
+        halted <= 1'b0;
+    end else if (!halted) begin
+        // Use two cycle load/store to handle single port RAM.
+        // Load/Store Cycle 2: Load/store update when flag is set.
+        if (load_flag) begin
+            registers[destination] <= load_store_buffer;
+            load_flag <= 0;
+        end else if (store_flag) begin
+            if (high_or_low == 1'b1) begin
+                mem[word_addr][15:8] <= load_store_buffer;
+            end else begin
+                mem[word_addr][7:0] <= load_store_buffer;
+            end
+            store_flag <= 0;
+        // Load/Store Cycle 1: Copy data to buffer and set flag.
+        end else if (op_code & LOAD_STORE_MASK == 8'd1) begin  // LOAD
+            if (high_or_low == 1'b1) begin
+                load_store_buffer <= mem[word_addr][15:8];
+            end else begin
+                load_store_buffer <= mem[word_addr][7:0];
+            end
+            load_flag <= 1'b1;
+            pc <= pc + 1'b1;
+        end else if (op_code & LOAD_STORE_MASK == 8'd2) begin  // STORE
+            load_store_buffer <= registers[destination];
+            store_flag <= 1'b1;
+            pc <= pc + 1'b1;
+        // For ALU instructions, write ALU output to destination register.
+        end else if (use_alu) begin
+            registers[destination] <= alu_out;
+            pc <= pc + 1'b1;
+        // HALT
+        end else if (op_code == 8'd4) begin
+            halted <= 1'b1;
         end else begin
-            mem[word_addr][7:0] <= load_store_buffer;
+            // TODO: Implement jump and conditional jump.
+            pc <= pc + 1'b1;
         end
-        store_flag <= 0;
-    // Load/Store Cycle 1: Copy data to buffer and set flag.
-    end else if (op_code & LOAD_STORE_MASK == 8'd1) begin  // LOAD
-        if (high_or_low == 1'b1) begin
-            load_store_buffer <= mem[word_addr][15:8];
-        end else begin
-            load_store_buffer <= mem[word_addr][7:0];
-        end
-        load_flag <= 1'b1;
-        pc <= pc + 1'b1;
-    end else if (op_code & LOAD_STORE_MASK == 8'd2) begin  // STORE
-        load_store_buffer <= registers[destination];
-        store_flag <= 1'b1;
-        pc <= pc + 1'b1;
-    // For ALU instructions, write ALU output to destination register.
-    end else if (use_alu) begin
-        registers[destination] <= alu_out;
-        pc <= pc + 1'b1;
-    end else begin
-        // TODO: Implement halt, jump, and conditional jump.
-        pc <= pc + 1'b1;
     end
-    
 end
 
 endmodule
