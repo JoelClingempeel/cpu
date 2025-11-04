@@ -18,7 +18,10 @@ if (len(sys.argv) != 2):
     sys.exit()
 with open(sys.argv[1]) as f:
     for line in f:
-        instruction, operand1, operand2 = line.split()
+        tokens = line.split()
+        instruction = tokens[0]
+        operand1 = tokens[1] if len(tokens) > 1 else ""
+        operand2 = tokens[2] if len(tokens) > 2 else ""
         operand1 = operand1.replace(",", "")
         if instruction in alu_ops:
             # ALU opcode format:
@@ -31,4 +34,10 @@ with open(sys.argv[1]) as f:
                 # 0b10 sets use_alu flag to 1 and use_register flag to 0.
                 opcode = (registers[operand1] << 6) + (0b10 << 4) + alu_ops[instruction]
                 operand = int(operand2)
-            print(bin((opcode << 8) + operand))
+        elif instruction in ("load", "store"):
+            # LOAD/STORE opcode format:
+            # [dest (2 bits)][1 for load or 2 for store (6 bits)]
+            load_or_store = 1 if instruction == "load" else 2
+            opcode = (registers[operand1] << 6) + load_or_store
+            operand = int(operand2)
+        print(bin((opcode << 8) + operand))
