@@ -40,4 +40,10 @@ with open(sys.argv[1]) as f:
             load_or_store = 1 if instruction == "load" else 2
             opcode = (registers[operand1] << 6) + load_or_store
             operand = int(operand2)
+        elif instruction == "halt":
+            opcode = 4
+            operand = 0
+        elif instruction == "nop":
+            opcode = 0
+            operand = 0
         print(bin((opcode << 8) + operand))
