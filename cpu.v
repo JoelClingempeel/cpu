@@ -114,8 +114,22 @@ always @(posedge clk or posedge rst) begin
         end else if (op_code == 8'd4) begin  // HALT
             halted <= 1'b1;
             zero_flag <= 1'b0;
-        end else if (op_code == 8'd5) begin
+        end else if (op_code == 8'd5) begin  // JMP
             pc <= operand;
+            zero_flag <= 1'b0;
+        end else if (op_code == 8'd6) begin  // JZ
+            if (zero_flag == 1'b1) begin
+                pc <= operand;
+            end else begin
+                pc <= pc + 1'b1;
+            end
+            zero_flag <= 1'b0;
+        end else if (op_code == 8'd7) begin  // JNZ
+            if (zero_flag == 1'b0) begin
+                pc <= operand;
+            end else begin
+                pc <= pc + 1'b1;
+            end
             zero_flag <= 1'b0;
         end else begin
             // TODO: Implement jump and conditional jump.
