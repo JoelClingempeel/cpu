@@ -65,11 +65,13 @@ always @(posedge clk or posedge rst) begin
                 mem[i] <= 16'b0;
             end
         `endif
-        registers[0] <= 8'b0;
-        registers[1] <= 8'b101;
-        registers[2] <= 8'b1;
+        registers[0] <= 8'b101;
+        registers[1] <= 8'b0;
+        registers[2] <= 8'b0;
         pc <= 8'b0;
         load_store_buffer <= 8'b0;
+        load_flag <= 1'b0;
+        store_flag <= 1'b0;
         halted <= 1'b0;
     end else if (!halted) begin
         // Use two cycle load/store to handle single port RAM.
@@ -77,6 +79,7 @@ always @(posedge clk or posedge rst) begin
         if (load_flag) begin
             registers[destination] <= load_store_buffer;
             load_flag <= 0;
+            pc <= pc + 1'b1;
         end else if (store_flag) begin
             if (high_or_low == 1'b1) begin
                 mem[word_addr][15:8] <= load_store_buffer;
@@ -84,19 +87,18 @@ always @(posedge clk or posedge rst) begin
                 mem[word_addr][7:0] <= load_store_buffer;
             end
             store_flag <= 0;
+            pc <= pc + 1'b1;
         // Load/Store Cycle 1: Copy data to buffer and set flag.
-        end else if (op_code & LOAD_STORE_MASK == 8'd1) begin  // LOAD
+        end else if ((op_code & LOAD_STORE_MASK) == 8'd1) begin  // LOAD
             if (high_or_low == 1'b1) begin
                 load_store_buffer <= mem[word_addr][15:8];
             end else begin
                 load_store_buffer <= mem[word_addr][7:0];
             end
             load_flag <= 1'b1;
-            pc <= pc + 1'b1;
-        end else if (op_code & LOAD_STORE_MASK == 8'd2) begin  // STORE
+        end else if ((op_code & LOAD_STORE_MASK) == 8'd2) begin  // STORE
             load_store_buffer <= registers[destination];
             store_flag <= 1'b1;
-            pc <= pc + 1'b1;
         // For ALU instructions, write ALU output to destination register.
         end else if (use_alu) begin
             registers[destination] <= alu_out;
