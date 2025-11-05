@@ -14,6 +14,7 @@ reg [$clog2(MEMORY_SIZE)-1:0] pc = 0;
 reg [7:0] load_store_buffer;
 reg load_flag;
 reg store_flag;
+reg zero_flag;
 reg halted;
 
 // Getting opcode and operand (1 byte each)
@@ -72,6 +73,7 @@ always @(posedge clk or posedge rst) begin
         load_store_buffer <= 8'b0;
         load_flag <= 1'b0;
         store_flag <= 1'b0;
+        zero_flag <= 1'b0;
         halted <= 1'b0;
     end else if (!halted) begin
         // Use two cycle load/store to handle single port RAM.
@@ -96,19 +98,26 @@ always @(posedge clk or posedge rst) begin
                 load_store_buffer <= mem[word_addr][7:0];
             end
             load_flag <= 1'b1;
+            zero_flag <= 1'b0;
         end else if ((op_code & LOAD_STORE_MASK) == 8'd2) begin  // STORE
             load_store_buffer <= registers[destination];
             store_flag <= 1'b1;
+            zero_flag <= 1'b0;
         // For ALU instructions, write ALU output to destination register.
         end else if (use_alu) begin
             registers[destination] <= alu_out;
             pc <= pc + 1'b1;
-        // HALT
-        end else if (op_code == 8'd4) begin
+            zero_flag <= 1'b0;
+        end else if ((op_code & LOAD_STORE_MASK) == 8'd3) begin  // CMP
+            zero_flag <= (registers[destination] == registers[operand]);
+            pc <= pc + 1'b1;
+        end else if (op_code == 8'd4) begin  // HALT
             halted <= 1'b1;
+            zero_flag <= 1'b0;
         end else begin
             // TODO: Implement jump and conditional jump.
             pc <= pc + 1'b1;
+            zero_flag <= 1'b0;
         end
     end
 end
