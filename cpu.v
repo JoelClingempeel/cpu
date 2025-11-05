@@ -4,8 +4,8 @@ module cpu(
 );
 
 parameter MEMORY_SIZE = 32;  // In two byte words
-// Apply mask to strip destination bits from load/store instructions.
-parameter [7:0] LOAD_STORE_MASK = 8'b00111111;
+// Apply mask to strip destination bits from instructions.
+parameter [7:0] STRIP_DEST_MASK = 8'b00111111;
 
 // Storage
 reg [7:0] registers [2:0];
@@ -91,7 +91,7 @@ always @(posedge clk or posedge rst) begin
             store_flag <= 0;
             pc <= pc + 1'b1;
         // Load/Store Cycle 1: Copy data to buffer and set flag.
-        end else if ((op_code & LOAD_STORE_MASK) == 8'd1) begin  // LOAD
+        end else if ((op_code & STRIP_DEST_MASK) == 8'd1) begin  // LOAD
             if (high_or_low == 1'b1) begin
                 load_store_buffer <= mem[word_addr][15:8];
             end else begin
@@ -99,7 +99,7 @@ always @(posedge clk or posedge rst) begin
             end
             load_flag <= 1'b1;
             zero_flag <= 1'b0;
-        end else if ((op_code & LOAD_STORE_MASK) == 8'd2) begin  // STORE
+        end else if ((op_code & STRIP_DEST_MASK) == 8'd2) begin  // STORE
             load_store_buffer <= registers[destination];
             store_flag <= 1'b1;
             zero_flag <= 1'b0;
@@ -108,7 +108,7 @@ always @(posedge clk or posedge rst) begin
             registers[destination] <= alu_out;
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
-        end else if ((op_code & LOAD_STORE_MASK) == 8'd3) begin  // CMP
+        end else if ((op_code & STRIP_DEST_MASK) == 8'd3) begin  // CMP
             zero_flag <= (registers[destination] == registers[operand]);
             pc <= pc + 1'b1;
         end else if (op_code == 8'd4) begin  // HALT
