@@ -132,7 +132,6 @@ always @(posedge clk or posedge rst) begin
             end
             zero_flag <= 1'b0;
         end else begin
-            // TODO: Implement jump and conditional jump.
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
         end
