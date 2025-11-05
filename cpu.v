@@ -3,7 +3,7 @@ module cpu(
     input wire rst
 );
 
-parameter MEMORY_SIZE = 16;  // In bytes
+parameter MEMORY_SIZE = 32;  // In two byte words
 // Apply mask to strip destination bits from load/store instructions.
 parameter [7:0] LOAD_STORE_MASK = 8'b00111111;
 
@@ -52,7 +52,7 @@ assign C_reg = registers[2];
 
 // For individual byte access instead of via 2 byte words
 wire [7:0] word_addr = operand >> 1;
-wire high_or_low = operand % 1;
+wire high_or_low = operand % 2;
 
 integer i;  // For initializing memory
 
