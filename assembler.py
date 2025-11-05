@@ -52,6 +52,9 @@ with open(in_file) as f:
         elif instruction == "halt":
             opcode = 4
             operand = 0
+        elif instruction == "jmp":
+            opcode = 5
+            operand =int(operand1)
         elif instruction == "nop":
             opcode = 0
             operand = 0
