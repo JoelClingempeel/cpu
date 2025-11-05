@@ -60,7 +60,7 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
         // Only initialize memory to 0 if synthesizing.
         // In simulations, the test bench reads from a file.
-        `ifndef SYNTHESIS
+        `ifdef SYNTHESIS
             for (i = 0; i < MEMORY_SIZE; i++) begin
                 mem[i] <= 16'b0;
             end
