@@ -55,13 +55,13 @@ with open(in_file) as f:
             operand = 0
         elif instruction == "jmp":
             opcode = 5
-            operand =int(operand1)
+            operand = int(operand1)
         elif instruction == "jz":
             opcode = 6
-            operand =int(operand1)
+            operand = int(operand1)
         elif instruction == "jnz":
             opcode = 7
-            operand =int(operand1)
+            operand = int(operand1)
         elif instruction == "nop":
             opcode = 0
             operand = 0
