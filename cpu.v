@@ -54,16 +54,17 @@ assign C_reg = registers[2];
 wire [7:0] word_addr = operand >> 1;
 wire high_or_low = operand % 1;
 
+integer i;  // For initializing memory
+
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        mem[0] <= 16'b0010000000101010;
-        mem[1] <= 16'b0010000100000011;
-        mem[2] <= 16'b0010000000101010;
-        mem[3] <= 16'b0010011000110000;
-        mem[4] <= 16'b0;
-        mem[5] <= 16'b0111000000000000;
-        mem[6] <= 16'b1011000000000001;
-        mem[7] <= 16'b0;
+        // Only initialize memory to 0 if synthesizing.
+        // In simulations, the test bench reads from a file.
+        `ifndef SYNTHESIS
+            for (i = 0; i < MEMORY_SIZE; i++) begin
+                mem[i] <= 16'b0;
+            end
+        `endif
         registers[0] <= 8'b0;
         registers[1] <= 8'b101;
         registers[2] <= 8'b1;

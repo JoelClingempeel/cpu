@@ -15,8 +15,12 @@ registers = {"A": 0,
 
 if (len(sys.argv) != 2):
     print("Usage: python %s <file>" % sys.argv[0])
+    print("<file> should have a .asm extension.")
     sys.exit()
-with open(sys.argv[1]) as f:
+
+out = []
+in_file = sys.argv[1]
+with open(in_file) as f:
     for line in f:
         tokens = line.split()
         instruction = tokens[0]
@@ -46,4 +50,8 @@ with open(sys.argv[1]) as f:
         elif instruction == "nop":
             opcode = 0
             operand = 0
-        print(bin((opcode << 8) + operand))
+        out.append(bin((opcode << 8) + operand)[2:])
+
+out_file = in_file.replace(".asm", ".bin")
+with open(out_file, 'w') as f:
+    f.write('\n'.join(out))
