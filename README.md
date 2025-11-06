@@ -22,4 +22,4 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
 <file_name> should have a .asm extension.
 
 ### Simulation:
-To use the assembler output in a simulation, set the parameter `binary_file` near the top of `cpu_tb.v`.
+To use the assembler output in a simulation, set the parameters `BINARY_FILE` and `MEMORY_SIZE` near the top of `cpu_tb.v`. Note that `MEMORY_SIZE` is the number of *two byte words*.
