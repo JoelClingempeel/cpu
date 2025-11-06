@@ -72,6 +72,7 @@ always @(posedge clk or posedge rst) begin
         registers[0] <= 8'b0;
         registers[1] <= 8'b0;
         registers[2] <= 8'b0;
+        registers[3] <= 8'b0;
         pc <= 8'b0;
         load_store_buffer <= 8'b0;
         load_flag <= 1'b0;
