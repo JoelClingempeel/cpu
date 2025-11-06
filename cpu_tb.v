@@ -3,7 +3,7 @@
 module cpu_tb();
 
 // Set to the binary file produced by running the assembler.
-parameter string BINARY_FILE = "simple_test.bin";
+parameter string BINARY_FILE = "fibonacci.bin";
 
 reg clk = 0;
 reg rst = 0;
