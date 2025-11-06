@@ -10,11 +10,10 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
 ### Instructions supported:
  * add/sub/mul/div/mod/not/and/or/xor reg, reg/literal
  * load/store reg
+ * mov reg, reg/literal
  * cmp reg, reg
  * halt
- * jmp reg
- * jz reg
- * jnz reg
+ * jmp/jz/jnz reg
  * nop
 
 ### Assembler usage:

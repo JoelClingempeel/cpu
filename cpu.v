@@ -66,7 +66,7 @@ always @(posedge clk or posedge rst) begin
                 mem[i] <= 16'b0;
             end
         `endif
-        registers[0] <= 8'b101;
+        registers[0] <= 8'b0;
         registers[1] <= 8'b0;
         registers[2] <= 8'b0;
         pc <= 8'b0;
@@ -106,6 +106,14 @@ always @(posedge clk or posedge rst) begin
         // For ALU instructions, write ALU output to destination register.
         end else if (use_alu) begin
             registers[destination] <= alu_out;
+            pc <= pc + 1'b1;
+            zero_flag <= 1'b0;
+        end else if ((op_code & 8'b1111) == 8'd8) begin  // MOV
+            if (use_register) begin
+                registers[destination] <= registers[operand];
+            end else begin
+                registers[destination] <= operand;
+            end
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
         end else if ((op_code & STRIP_DEST_MASK) == 8'd3) begin  // CMP

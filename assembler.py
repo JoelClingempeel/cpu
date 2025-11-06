@@ -44,6 +44,15 @@ with open(in_file) as f:
             load_or_store = 1 if instruction == "load" else 2
             opcode = (registers[operand1] << 6) + load_or_store
             operand = int(operand2)
+        elif instruction == "mov":
+            # MOV opcode format:
+            # [dest (2 bits)][0 (1 bit)][use_register (1 bit)][8 (4 bits)]
+            if operand2 in registers:
+                opcode = (registers[operand1] << 6) + (0b1 << 4) + 8
+                operand = registers[operand2]
+            else:
+                opcode = (registers[operand1] << 6) + 8
+                operand = int(operand2)
         elif instruction == "cmp":
             # CMP opcode format:
             # [dest (2 bits)][3 (6 bits)]
