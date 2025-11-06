@@ -6,6 +6,7 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
  * A
  * B
  * C
+ * D
 
 ### Instructions supported:
  * add(u)/sub(u)/mul(u)/div(u)/mod/not/and/or/xor reg, reg/literal

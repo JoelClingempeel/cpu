@@ -15,7 +15,8 @@ alu_ops = {"addu": 0,
            "div": 12}
 registers = {"A": 0,
              "B": 1,
-             "C": 2}
+             "C": 2,
+             "D": 3}
 
 if (len(sys.argv) != 2):
     print("Usage: python %s <file>" % sys.argv[0])

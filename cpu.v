@@ -8,7 +8,7 @@ parameter MEMORY_SIZE = 32;  // In two byte words
 parameter [7:0] STRIP_DEST_MASK = 8'b00111111;
 
 // Storage
-reg [7:0] registers [2:0];
+reg [7:0] registers [3:0];
 reg [15:0] mem [0:MEMORY_SIZE-1];
 reg [$clog2(MEMORY_SIZE)-1:0] pc = 0;
 reg [7:0] load_store_buffer;
@@ -47,9 +47,11 @@ alu my_alu(
 wire [7:0] A_reg;
 wire [7:0] B_reg; 
 wire [7:0] C_reg;
+wire [7:0] D_reg;
 assign A_reg = registers[0];
 assign B_reg = registers[1];
 assign C_reg = registers[2];
+assign D_reg = registers[3];
 
 // For individual byte access instead of via 2 byte words
 wire [7:0] word_addr = operand >> 1;
