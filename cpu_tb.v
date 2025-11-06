@@ -3,7 +3,7 @@
 module cpu_tb();
 
 // Set to the binary file produced by running the assembler.
-parameter string binary_file = "simple_test.bin";
+parameter string BINARY_FILE = "simple_test.bin";
 
 reg clk = 0;
 reg rst = 0;
@@ -24,7 +24,7 @@ initial begin
     rst = ~rst;
     # 10
     rst = ~rst;
-    $readmemb(binary_file, uut.mem);
+    $readmemb(BINARY_FILE, uut.mem);
 end
 
 initial begin
