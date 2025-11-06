@@ -23,3 +23,8 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
 
 ### Simulation:
 To use the assembler output in a simulation, set the parameters `BINARY_FILE` and `MEMORY_SIZE` near the top of `cpu_tb.v`. Note that `MEMORY_SIZE` is the number of *two byte words*.
+
+### Demo programs:
+ * `simple_test.asm` - demonstrates using various instructions.
+ * `fibonacci.asm` - computes Fibonacci numbers by iteratively mapping (A, B) <- (A + B, A) using C as a counter and D as a temporary buffer.
+   - This stops after 11 loop iterations because after that A would overflow.
