@@ -15,6 +15,7 @@ reg [7:0] load_store_buffer;
 reg load_flag;
 reg store_flag;
 reg zero_flag;
+reg greater_than_flag;
 reg halted;
 
 // Getting opcode and operand (1 byte each)
@@ -76,6 +77,7 @@ always @(posedge clk or posedge rst) begin
         load_flag <= 1'b0;
         store_flag <= 1'b0;
         zero_flag <= 1'b0;
+        greater_than_flag <= 1'b0;
         halted <= 1'b0;
     end else if (!halted) begin
         // Use two cycle load/store to handle single port RAM.
@@ -101,15 +103,18 @@ always @(posedge clk or posedge rst) begin
             end
             load_flag <= 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if ((op_code & STRIP_DEST_MASK) == 8'd2) begin  // STORE
             load_store_buffer <= registers[destination];
             store_flag <= 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         // For ALU instructions, write ALU output to destination register.
         end else if (use_alu) begin
             registers[destination] <= alu_out;
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if ((op_code & 8'b1111) == 8'd8) begin  // MOV
             if (use_register) begin
                 registers[destination] <= registers[operand];
@@ -118,15 +123,20 @@ always @(posedge clk or posedge rst) begin
             end
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if ((op_code & STRIP_DEST_MASK) == 8'd3) begin  // CMP
             zero_flag <= (registers[destination] == registers[operand]);
+            greater_than_flag <= ($signed(registers[destination])
+                                  > $signed(registers[operand]));
             pc <= pc + 1'b1;
         end else if (op_code == 8'd4) begin  // HALT
             halted <= 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if (op_code == 8'd5) begin  // JMP
             pc <= operand;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if (op_code == 8'd6) begin  // JZ
             if (zero_flag == 1'b1) begin
                 pc <= operand;
@@ -134,6 +144,7 @@ always @(posedge clk or posedge rst) begin
                 pc <= pc + 1'b1;
             end
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else if (op_code == 8'd7) begin  // JNZ
             if (zero_flag == 1'b0) begin
                 pc <= operand;
@@ -141,9 +152,11 @@ always @(posedge clk or posedge rst) begin
                 pc <= pc + 1'b1;
             end
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else begin
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end
     end
 end
