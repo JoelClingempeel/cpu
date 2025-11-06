@@ -25,13 +25,26 @@ if (len(sys.argv) != 2):
 
 out = []
 in_file = sys.argv[1]
+labels = {}
+count = 0
 with open(in_file) as f:
     for line in f:
+        # Keep a mapping of label -> location of next instruction.
+        if line.strip()[-1] == ':' and ' ' not in line:
+            labels[line.strip()[:-1]] = count
+            continue
+
         tokens = line.lower().split()
         instruction = tokens[0]
         operand1 = tokens[1] if len(tokens) > 1 else ""
         operand2 = tokens[2] if len(tokens) > 2 else ""
         operand1 = operand1.replace(",", "")
+
+        # Replace labels with memory locations for jump instructions.
+        if instruction in ("jmp", "jz", "jnz", "jg", "jl"):
+            if operand1 in labels:
+                operand1 = labels[operand1]
+
         if instruction in alu_ops:
             # ALU opcode format:
             # [dest (2 bits)][use_alu (1 bit)][use_register (1 bit)][alu_op (4 bits)]
@@ -86,6 +99,8 @@ with open(in_file) as f:
             opcode = 0
             operand = 0
         out.append(bin((opcode << 8) + operand)[2:])
+
+        count += 1
 
 out_file = in_file.replace(".asm", ".bin")
 with open(out_file, 'w') as f:
