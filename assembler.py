@@ -13,10 +13,10 @@ alu_ops = {"addu": 0,
            "sub": 10,
            "mul": 11,
            "div": 12}
-registers = {"A": 0,
-             "B": 1,
-             "C": 2,
-             "D": 3}
+registers = {"a": 0,
+             "b": 1,
+             "c": 2,
+             "d": 3}
 
 if (len(sys.argv) != 2):
     print("Usage: python %s <file>" % sys.argv[0])
@@ -27,7 +27,7 @@ out = []
 in_file = sys.argv[1]
 with open(in_file) as f:
     for line in f:
-        tokens = line.split()
+        tokens = line.lower().split()
         instruction = tokens[0]
         operand1 = tokens[1] if len(tokens) > 1 else ""
         operand2 = tokens[2] if len(tokens) > 2 else ""
