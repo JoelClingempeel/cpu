@@ -8,7 +8,8 @@ parameter string binary_file = "simple_test.bin";
 reg clk = 0;
 reg rst = 0;
 
-cpu uut (
+// Set MEMORY_SIZE to the desired number of two byte words.
+cpu #(.MEMORY_SIZE(32)) uut (
     .clk(clk),
     .rst(rst)
 );
