@@ -153,6 +153,22 @@ always @(posedge clk or posedge rst) begin
             end
             zero_flag <= 1'b0;
             greater_than_flag <= 1'b0;
+        end else if (op_code == 8'd9) begin  // JG
+            if (greater_than_flag == 1'b1) begin
+                pc <= operand;
+            end else begin
+                pc <= pc + 1'b1;
+            end
+            zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
+        end else if (op_code == 8'd10) begin  // JL
+            if (greater_than_flag == 1'b0) begin
+                pc <= operand;
+            end else begin
+                pc <= pc + 1'b1;
+            end
+            zero_flag <= 1'b0;
+            greater_than_flag <= 1'b0;
         end else begin
             pc <= pc + 1'b1;
             zero_flag <= 1'b0;

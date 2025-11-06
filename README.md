@@ -9,13 +9,13 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
  * D
 
 ### Instructions supported:
- * add(u)/sub(u)/mul(u)/div(u)/mod/not/and/or/xor reg, reg/literal
- * load/store reg
- * mov reg, reg/literal (signed only literals)
- * cmp reg, reg
- * halt
- * jmp/jz/jnz reg
- * nop
+ * `add(u)/sub(u)/mul(u)/div(u)/mod/not/and/or/xor reg, reg/literal`
+ * `load/store reg`
+ * `mov reg, reg/literal` (signed only literals)
+ * `cmp reg, reg`
+ * `halt`
+ * `jmp/jz/jnz/jg/jl reg` (signed only for `jg/jl`)
+ * `nop`
 
 ### Assembler usage:
 `python assembler.py <file_name>`

@@ -63,7 +63,7 @@ with open(in_file) as f:
             # [dest (2 bits)][3 (6 bits)]
             opcode = (registers[operand1] << 6) + 3
             operand = registers[operand2]
-        # Instructions halt, jmp, jz, jnz, and nop have a single opcode.
+        # Instructions halt/jmp/jz/jnz/jg/jl/nop have a single opcode.
         elif instruction == "halt":
             opcode = 4
             operand = 0
@@ -75,6 +75,12 @@ with open(in_file) as f:
             operand = int(operand1)
         elif instruction == "jnz":
             opcode = 7
+            operand = int(operand1)
+        elif instruction == "jg":
+            opcode = 9
+            operand = int(operand1)
+        elif instruction == "jl":
+            opcode = 10
             operand = int(operand1)
         elif instruction == "nop":
             opcode = 0
