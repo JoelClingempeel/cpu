@@ -1,14 +1,18 @@
 import sys
 
-alu_ops = {"add": 0,
-           "sub": 1,
-           "mul": 2,
-           "div": 3,
+alu_ops = {"addu": 0,
+           "subu": 1,
+           "mulu": 2,
+           "divu": 3,
            "mod": 4,
            "not": 5,
            "and": 6,
            "or": 7,
-           "xor": 8}
+           "xor": 8,
+           "add": 9,
+           "sub": 10,
+           "mul": 11,
+           "div": 12}
 registers = {"A": 0,
              "B": 1,
              "C": 2}

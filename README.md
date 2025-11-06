@@ -8,9 +8,9 @@ This project creates a basic RISC CPU without standard optimizations (pipelining
  * C
 
 ### Instructions supported:
- * add/sub/mul/div/mod/not/and/or/xor reg, reg/literal
+ * add(u)/sub(u)/mul(u)/div(u)/mod/not/and/or/xor reg, reg/literal
  * load/store reg
- * mov reg, reg/literal
+ * mov reg, reg/literal (signed only literals)
  * cmp reg, reg
  * halt
  * jmp/jz/jnz reg
